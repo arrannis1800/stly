@@ -44,15 +44,14 @@ private:
 public: 
 	T& operator [](int64_t idx)
 	{
-		if (idx < static_cast<int64_t>(size))
+		int64_t t_size = static_cast<int64_t>(size);
+
+		if(idx < 0 && t_size + idx >= 0)
 		{
-			if(idx < 0)
-			{
-				return array[size-1-(idx%size)];
-			} else 
-			{
-				return array[idx];
-			}
+			return array[t_size + idx];
+		} else if (idx >= 0 && idx < t_size)
+		{
+			return array[idx];
 		}
 		throw -1;
 	};
