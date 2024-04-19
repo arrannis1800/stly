@@ -18,35 +18,41 @@ public:
 		delete[] array;
 	};
 
-	bool const bEmpty();
+	bool bEmpty() const;
 
-	void insert(size_t idx, T item);
+	void insert(uint32_t idx, T item);
 
 	void push_back(T item);
 
 	void push_front(T item);
 
-	T const erase(size_t idx);
+	T const erase(uint32_t idx);
 
 	T const pop_back();
 
-	size_t get_size();
+	uint32_t get_size();
 
 	void _get_dev_info();
 
 private:
 	T* array;
-	size_t size;
-	size_t capacity;
+	uint32_t size;
+	uint32_t capacity;
 
-	void recreate_array(size_t new_size);
+	void recreate_array(uint32_t new_size);
 
 public: 
-	T& operator [](size_t idx)
+	T& operator [](int64_t idx)
 	{
-		if (idx < size)
+		if (idx < static_cast<int64_t>(size))
 		{
-			return array[idx];
+			if(idx < 0)
+			{
+				return array[size-1-(idx%size)];
+			} else 
+			{
+				return array[idx];
+			}
 		}
 		throw -1;
 	};
@@ -70,13 +76,13 @@ private:
 #ifdef STLY_IMPLEMENTATION
 
 template <typename T>
-bool const SmartArray<T>::bEmpty()
+bool SmartArray<T>::bEmpty() const
 {
 	return size == 0 ? true : false;
 }
 
 template <typename T>
-void SmartArray<T>::insert(size_t idx, T item)
+void SmartArray<T>::insert(uint32_t idx, T item)
 {
 	if(size >= capacity)
 	{
@@ -89,7 +95,7 @@ void SmartArray<T>::insert(size_t idx, T item)
 	} else
 	{
 		T temp = item;
-		for(size_t i = idx; i < size; i++)
+		for(uint32_t i = idx; i < size; i++)
 		{
 			temp += array[i];
 			array[i] = temp - array[i];
@@ -113,7 +119,7 @@ void SmartArray<T>::push_front(T item)
 };
 
 template <typename T>
-T const SmartArray<T>::erase(size_t idx)
+T const SmartArray<T>::erase(uint32_t idx)
 {
 	if(bEmpty())
 	{
@@ -123,7 +129,7 @@ T const SmartArray<T>::erase(size_t idx)
 	T temp = array[idx];
 	if(idx != size)
 	{
-		for(size_t i = idx; i < size; i++)
+		for(uint32_t i = idx; i < size; i++)
 		{
 			array[i] = array[i+1];
 		}
@@ -144,7 +150,7 @@ T const SmartArray<T>::pop_back()
 };
 
 template <typename T>
-size_t SmartArray<T>::get_size()
+uint32_t SmartArray<T>::get_size()
 {
 	return size;
 };
@@ -153,17 +159,17 @@ template <typename T>
 void SmartArray<T>::_get_dev_info()
 {
 	printf("INFO: array size: %d, array capacity: %d\n", size, capacity);
-	for (size_t i = 0; i < size; i++)
+	for (uint32_t i = 0; i < size; i++)
 	{
 		printf("\tElement %d: %zu\n", i, array[i]);
 	}
 };
 
 template <typename T>
-void SmartArray<T>::recreate_array(size_t new_size)
+void SmartArray<T>::recreate_array(uint32_t new_size)
 {
 	T* temp = new T[new_size];
-	for (size_t i = 0; i < size; i++)
+	for (uint32_t i = 0; i < size; i++)
 	{
 		temp[i] = array[i];
 	}
