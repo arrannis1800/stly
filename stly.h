@@ -206,5 +206,6 @@ double StopWatch::get_seconds()
 	return get_miliseconds() / 1000.0;
 }
 
+
 #endif // STLY_IMPLEMENTATION
 #endif //STLY_H
