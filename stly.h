@@ -1,6 +1,7 @@
 #ifndef STLY_H
 #define STLY_H
 #include <stdio.h>
+#include <chrono>
 
 template <typename T> class SmartArray
 {
@@ -49,6 +50,21 @@ public:
 		}
 		throw -1;
 	};
+};
+
+class StopWatch
+{
+public:
+	void start_sw();
+	void stop_sw();
+	double get_microseconds();
+	double get_miliseconds();
+	double get_seconds();
+
+private:
+	std::chrono::time_point<std::chrono::steady_clock> m_start_time;
+	std::chrono::time_point<std::chrono::steady_clock> m_end_time;
+	bool bRunning = false;
 };
 
 #ifdef STLY_IMPLEMENTATION
@@ -155,6 +171,40 @@ void SmartArray<T>::recreate_array(size_t new_size)
 	array = temp;
 	capacity = new_size;
 };
+
+void StopWatch::start_sw()
+{
+	bRunning = true;
+	m_start_time = std::chrono::steady_clock::now();
+}
+
+void StopWatch::stop_sw()
+{
+	bRunning = false;
+	m_end_time = std::chrono::steady_clock::now();
+}
+
+double StopWatch::get_microseconds()
+{
+	if (bRunning)
+	{	
+		return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - m_start_time).count();
+	} else 
+	{
+		return std::chrono::duration_cast<std::chrono::microseconds>(m_end_time - m_start_time).count();
+	}
+	
+}
+
+double StopWatch::get_miliseconds()
+{
+	return get_microseconds() / 1000.0;
+}
+
+double StopWatch::get_seconds()
+{
+	return get_miliseconds() / 1000.0;
+}
 
 #endif // STLY_IMPLEMENTATION
 #endif //STLY_H
