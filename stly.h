@@ -2,6 +2,7 @@
 #define STLY_H
 #include <stdio.h>
 #include <chrono>
+#include <map>
 
 template <typename T> class SmartArray
 {
@@ -55,6 +56,28 @@ public:
 		}
 		throw -1;
 	};
+};
+
+template<typename K, typename V>
+class IntervalMap {
+public:
+	// constructor associates whole range of K with val
+	IntervalMap(V const& val)
+	: m_valBegin(val)
+	{}
+	void assign( K const& keyBegin, K const& keyEnd, V const& val );
+
+	V const& operator[]( K const& key ) const {
+		auto it=m_map.upper_bound(key);
+		if(it==m_map.begin()) {
+			return m_valBegin;
+		} else {
+			return (--it)->second;
+		}
+	}
+private:
+	V m_valBegin;
+	std::map<K,V> m_map;
 };
 
 class StopWatch
@@ -163,6 +186,42 @@ void SmartArray<T>::_get_dev_info()
 		printf("\tElement %d: %zu\n", i, array[i]);
 	}
 };
+
+template<typename K, typename V>
+void IntervalMap<K, V>::assign( K const& keyBegin, K const& keyEnd, V const& val )
+{
+	if (keyBegin < keyEnd)
+	{
+		V temp_v = this->operator[](keyBegin);
+		V temp_v_prev = m_map.lower_bound(keyBegin) == m_map.begin() ? m_valBegin : (--m_map.lower_bound(keyBegin))->second;
+		if(!(temp_v == val) && temp_v_prev == val) 
+		{
+			m_map[keyEnd] = temp_v;
+			m_map.erase(keyBegin);
+		} else if (!(temp_v == val) && !(temp_v_prev == val))
+		{
+			m_map[keyBegin] = val;
+			m_map[keyEnd] = temp_v;
+		}
+
+		
+
+		V temp_vv = m_map.lower_bound(keyEnd) == m_map.begin() ? m_valBegin : (--m_map.lower_bound(keyEnd))->second;
+		while (!((m_map.lower_bound(keyEnd) == m_map.begin() ? m_valBegin : (--m_map.lower_bound(keyEnd))->second) == this->operator[](keyBegin)))
+		{
+			auto it=m_map.lower_bound(keyEnd);
+			if(it==m_map.begin()) {
+				break;
+			} else {
+				if (m_map.upper_bound(keyEnd) != m_map.end() )
+				{
+					m_map[keyEnd] = temp_vv;
+				}
+				m_map.erase((--it)->first);
+			}
+		};
+	}
+}	
 
 template <typename T>
 void SmartArray<T>::recreate_array(uint32_t new_size)
