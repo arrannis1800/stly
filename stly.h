@@ -95,7 +95,7 @@ public:
 		delete[] arr;
 	};
 
-	T* operator[](int i)
+	T operator[](int i) const
 	{
 		return arr[i];
 	};
@@ -259,14 +259,14 @@ void Matrix<T>::rotate()
 	for(int i=0; i<rows; i++)
 	{
 		for(int j=i+1; j<cols; j++)
-			std::swap(arr[i][j], arr[j][i]);
+			std::swap(arr[i*cols + j], arr[j*cols + i]);
 	}
 
 	for(int i=0; i<rows; i++)
 	{
 		for(int j=0; j<cols/2; j++)
 		{
-			std::swap(arr[i][j], arr[i][cols-j-1]);
+			std::swap(arr[i*cols + j], arr[i*cols + cols-j-1]);
 		}
 	}
 };
