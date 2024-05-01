@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <chrono>
 #include <map>
+#include <initializer_list>
 
-template <typename T> class SmartArray
+template <typename T> 
+class SmartArray
 {
 public:
 	SmartArray()
@@ -56,6 +58,56 @@ public:
 		}
 		throw -1;
 	};
+};
+
+template <typename T>
+class Matrix
+{
+public:
+	Matrix(std::initializer_list<T> init_list, size_t cols_, size_t rows_)
+	{
+		cols = cols_;
+		rows = rows_;
+		if(cols_*rows_ != init_list.size())
+		{
+			printf("ERROR: Provided initializer list length does not match SPRITE_LEN.\n");
+			return;
+		}
+
+		arr = new T[cols*rows];
+		size_t c = 0, r = 0;
+		for (auto& elem : init_list)
+		{
+			arr[r*cols + c]=elem;
+			c++;
+			if (c >= cols)
+			{
+				c = 0;
+				r++;
+			}
+		}		
+	};
+
+	~Matrix()
+	{
+		delete[] arr;
+	};
+
+	T* operator[](int i)
+	{
+		return arr[i];
+	};
+
+	size_t get_rows() const;
+
+	size_t get_cols() const;
+
+	void rotate();
+
+private:
+	size_t rows;
+	size_t cols;
+	T* arr;
 };
 
 template<typename K, typename V>
@@ -184,6 +236,36 @@ void SmartArray<T>::_get_dev_info()
 	for (uint32_t i = 0; i < size; i++)
 	{
 		printf("\tElement %d: %zu\n", i, array[i]);
+	}
+};
+
+template <typename T>
+size_t Matrix<T>::get_rows() const
+{
+	return rows;
+};
+
+template <typename T>
+size_t Matrix<T>::get_cols() const
+{
+	return cols;
+};
+
+template<typename T>
+void Matrix<T>::rotate()
+{
+	for(int i=0; i<rows; i++)
+	{
+		for(int j=i+1; j<cols; j++)
+			std::swap(arr[i][j], arr[j][i]);
+	}
+
+	for(int i=0; i<rows; i++)
+	{
+		for(int j=0; j<cols/2; j++)
+		{
+			std::swap(arr[i][j], arr[i][cols-j-1]);
+		}
 	}
 };
 
