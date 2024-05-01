@@ -64,6 +64,8 @@ template <typename T>
 class Matrix
 {
 public:
+	Matrix() = default;
+
 	Matrix(std::initializer_list<T> init_list, size_t cols_, size_t rows_)
 	{
 		cols = cols_;
@@ -105,9 +107,9 @@ public:
 	void rotate();
 
 private:
-	size_t rows;
-	size_t cols;
-	T* arr;
+	size_t rows = 0;
+	size_t cols = 0;
+	T* arr = nullptr;
 };
 
 template<typename K, typename V>
